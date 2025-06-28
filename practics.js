@@ -1,3 +1,4 @@
+//New Code
 const BASE_URL = "https://backend-mxl6.onrender.com";
 
 // ✅ Remember Me Token Logic
@@ -17,21 +18,17 @@ fetch(`${BASE_URL}/api/me`, {
     const adminNames = ['Harsh Ninania', 'Satyam Pr'];
     isAdmin = adminNames.includes(user.name);
     if (isAdmin) {
-      document.querySelectorAll('.admin-only').forEach(el => {
-        el.style.display = 'inline-block';
-      });
+      document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
     }
     fetchTasksFromDB();
   })
-  .catch(err => {
-    console.error('Error fetching user info:', err);
+  .catch(() => {
     localStorage.removeItem('token');
     sessionStorage.removeItem('token');
     window.location.href = "login.html";
   });
-
 // ✅ Logout
-document.getElementById("logoutIconWrapper")?.addEventListener("click", function () {
+document.getElementById("logoutIconWrapper")?.addEventListener("click", () => {
   localStorage.removeItem('token');
   sessionStorage.removeItem('token');
   window.location.href = "login.html";
@@ -47,7 +44,10 @@ function showNotifToast() {
     toast.style.display = "none";
     registerForPush();
   };
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
 }
+  
 
 async function registerForPush() {
   try {
@@ -91,8 +91,7 @@ if ('serviceWorker' in navigator && 'PushManager' in window) {
   }
 }
 
-// ✅ Core Logic Continues
-
+//core LOGIC
 const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const weekGrid = document.getElementById('weekGrid');
 const addTaskForm = document.getElementById('addTaskForm');
@@ -126,7 +125,7 @@ function renderWeek() {
             ${task.name} | <b>Time:</b> ${task.time}
           </div>
           ${isAdmin ? `
-            <span style="color:#b71c1c;cursor:pointer;font-weight:bold;" title="Delete" data-day="${i}" data-idx="${idx}">&times;</span>
+            <span style="color:#b71c1c;cursor:pointer;font-weight:bold;" title="Delete Task" data-day="${i}" data-idx="${idx}">&times;</span>
             <form class="uploadForm" data-day="${i}" data-idx="${idx}" enctype="multipart/form-data">
               <input type="file" name="file" required>
               <button type="submit">Upload</button>
@@ -144,23 +143,23 @@ function renderWeek() {
 }
 
 function setupTaskEvents(tasks) {
-  document.querySelectorAll('.task span[title="Delete"]').forEach(span => {
+  document.querySelectorAll('.task span[title="Delete Task"]').forEach(span => {
     span.onclick = async () => {
       const dayIdx = +span.getAttribute('data-day');
       const taskIdx = +span.getAttribute('data-idx');
       const task = tasks[dayIdx][taskIdx];
+      if (!confirm("Are you sure you want to delete this task?")) return;
 
-      if (task._id) {
-        try {
-          const res = await fetch(`${BASE_URL}/task/${task._id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': 'Bearer ' + token }
-          });
-          const data = await res.json();
-          if (!data.success) alert('Failed to delete task from DB.');
-        } catch (err) {
-          alert('Server error while deleting task.');
-        }
+      try {
+        const res = await fetch(`${BASE_URL}/task/${task._id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const data = await res.json();
+        if (data.success) showToast("Task deleted");
+        else showToast("Failed to delete task", "red");
+      } catch {
+        showToast("Server error while deleting task", "red");
       }
 
       tasks[dayIdx].splice(taskIdx, 1);
@@ -196,15 +195,16 @@ function setupTaskEvents(tasks) {
           const patchData = await patchRes.json();
           if (patchData.success) {
             tasks[dayIdx][taskIdx].file = uploadData.file.filename;
+            showToast("File uploaded!");
             renderWeek();
           } else {
-            alert('Failed to link file to task');
+            showToast('Failed to link file to task', 'red');
           }
         } else {
-          alert('Upload failed');
+          showToast('Upload failed', 'red');
         }
-      } catch (err) {
-        alert('Server error while uploading');
+      } catch {
+        showToast('Server error while uploading', 'red');
       }
     };
   });
@@ -230,7 +230,7 @@ function setupTaskEvents(tasks) {
         a.click();
         a.remove();
         URL.revokeObjectURL(url);
-      } catch (err) {
+      } catch {
         alert('Error downloading file.');
       }
     };
@@ -253,7 +253,7 @@ function setupTaskEvents(tasks) {
         });
 
         const delData = await delRes.json();
-        if (!delData.success) return alert('Failed to delete file.');
+        if (!delData.success) return showToast('Failed to delete file.', 'red');
 
         const patchRes = await fetch(`${BASE_URL}/task/${taskId}/remove-file`, {
           method: 'PATCH',
@@ -261,13 +261,13 @@ function setupTaskEvents(tasks) {
         });
 
         const patchData = await patchRes.json();
-        if (!patchData.success) return alert('File deleted but reference remains.');
+        if (!patchData.success) return showToast('File deleted but reference remains.', 'red');
 
         tasks[dayIdx][taskIdx].file = '';
-        alert('File deleted');
+        showToast('File deleted');
         renderWeek();
-      } catch (err) {
-        alert('Server error');
+      } catch {
+        showToast('Server error', 'red');
       }
     };
   });
@@ -305,10 +305,10 @@ addTaskForm.onsubmit = async e => {
     });
 
     const data = await res.json();
-    if (!data.success) alert('Failed to save task in DB.');
+    if (!data.success) showToast('Failed to save task in DB.', 'red');
     else fetchTasksFromDB();
-  } catch (err) {
-    alert('Error connecting to server.');
+  } catch {
+    showToast('Error connecting to server.', 'red');
   }
 };
 
@@ -326,10 +326,10 @@ async function fetchTasksFromDB() {
       });
       renderWeek();
     } else {
-      alert('Failed to load tasks from DB');
+      showToast('Failed to load tasks from DB', 'red');
     }
-  } catch (err) {
-    alert('Server error while loading tasks.');
+  } catch {
+    showToast('Server error while loading tasks.', 'red');
   }
 }
 
