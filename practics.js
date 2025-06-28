@@ -1,4 +1,3 @@
-//New Code
 const BASE_URL = "https://backend-mxl6.onrender.com";
 
 // ✅ Remember Me Token Logic
@@ -27,6 +26,7 @@ fetch(`${BASE_URL}/api/me`, {
     sessionStorage.removeItem('token');
     window.location.href = "login.html";
   });
+
 // ✅ Logout
 document.getElementById("logoutIconWrapper")?.addEventListener("click", () => {
   localStorage.removeItem('token');
@@ -34,64 +34,86 @@ document.getElementById("logoutIconWrapper")?.addEventListener("click", () => {
   window.location.href = "login.html";
 });
 
-// ✅ Notification Toast Setup
-function showNotifToast() {
-  const toast = document.getElementById("notifToast");
-  if (!toast) return;
-  toast.style.display = "flex";
-  document.getElementById("notifToastClose").onclick = () => toast.style.display = "none";
-  document.getElementById("notifAllowBtn").onclick = () => {
-    toast.style.display = "none";
-    registerForPush();
-  };
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
-}
-  
+// === Notification Logic ===
+const PUBLIC_VAPID_KEY = 'BBuTvJaXDDMC4-uqJ2oYMnw2-JAaGwl1FzjwmAKGt_BdBQxmCnrOSVOafgS_vCpCMzYi9ayR3WqPBJNCibx03eg';
 
-async function registerForPush() {
+async function subscribeUserToPush() {
   try {
-    const reg = await navigator.serviceWorker.register('/frontend2/sw.js');
-    console.log('[SW] Registered:', reg);
+    const registration = await navigator.serviceWorker.ready;
+    const existing = await registration.pushManager.getSubscription();
 
-    const permission = await Notification.requestPermission();
-    if (permission !== 'granted') return alert("Notifications not enabled");
-
-    const existingSub = await reg.pushManager.getSubscription();
-    if (!existingSub) {
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: 'BBuTvJaXDDMC4-uqJ2oYMnw2-JAaGwl1FzjwmAKGt_BdBQxmCnrOSVOafgS_vCpCMzYi9ayR3WqPBJNCibx03eg'
-      });
-
-      await fetch(`${BASE_URL}/subscribe`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(sub)
-      });
-
-      console.log("Push subscribed.");
-    } else {
-      console.log("Already subscribed.");
+    if (existing) {
+      console.log('✅ Already subscribed to push');
+      return;
     }
+
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY)
+    });
+
+    await fetch(`${BASE_URL}/subscribe`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify(subscription)
+    });
+
+    console.log('📬 Subscribed to push notifications');
   } catch (err) {
-    console.error("Push setup failed:", err);
+    console.error('❌ Failed to subscribe to push:', err);
   }
 }
 
-if ('serviceWorker' in navigator && 'PushManager' in window) {
-  const alreadyAsked = localStorage.getItem("notifAsked");
-  if (!alreadyAsked && Notification.permission === 'default') {
-    setTimeout(() => {
-      showNotifToast();
-      localStorage.setItem("notifAsked", "true");
-    }, 5000);
-  } else if (Notification.permission === 'granted') {
-    registerForPush();
-  }
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = atob(base64);
+  return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
 }
 
-//core LOGIC
+window.addEventListener('load', () => {
+  const notifToast = document.getElementById('notifToast');
+  const notifAllowBtn = document.getElementById('notifAllowBtn');
+  const notifToastClose = document.getElementById('notifToastClose');
+
+  const permission = Notification?.permission;
+
+  if ('Notification' in window && permission !== 'granted') {
+    notifToast.style.display = 'flex';
+  }
+
+  notifAllowBtn?.addEventListener('click', async () => {
+    try {
+      const result = await Notification.requestPermission();
+      if (result === 'granted') {
+        localStorage.setItem('notifPermission', 'granted');
+        showToast("Notifications enabled!");
+
+        await navigator.serviceWorker.register('/frontend2/sw.js');
+        await subscribeUserToPush();
+
+        notifToast.style.display = 'none';
+      } else {
+        localStorage.removeItem('notifPermission');
+        showToast("Notifications denied", "red");
+        notifToast.style.display = 'none';
+      }
+    } catch {
+      showToast("Error requesting notification permission", "red");
+      notifToast.style.display = 'none';
+    }
+  });
+
+  notifToastClose?.addEventListener('click', () => {
+    localStorage.removeItem('notifPermission');
+    notifToast.style.display = 'none';
+  });
+});
+
+// === Core Task Logic ===
 const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const weekGrid = document.getElementById('weekGrid');
 const addTaskForm = document.getElementById('addTaskForm');
@@ -130,8 +152,8 @@ function renderWeek() {
               <input type="file" name="file" required>
               <button type="submit">Upload</button>
             </form>
-            ${task.file ? `<button class="deleteFileBtn" data-day="${i}" data-idx="${idx}" data-filename="${task.file}">Delete File</button>` : ''}`
-          : ''}`;
+            ${task.file ? `<button class="deleteFileBtn" data-day="${i}" data-idx="${idx}" data-filename="${task.file}">Delete File</button>` : ''}` : ''}`;
+
         card.appendChild(taskDiv);
       });
     }
@@ -346,79 +368,3 @@ document.getElementById('nextWeekBtn').onclick = () => {
   document.getElementById('thisWeekBtn').classList.remove('active-tab');
   renderWeek();
 };
-const PUBLIC_VAPID_KEY = 'BBuTvJaXDDMC4-uqJ2oYMnw2-JAaGwl1FzjwmAKGt_BdBQxmCnrOSVOafgS_vCpCMzYi9ayR3WqPBJNCibx03eg'; // 🔁 Replace this!
-
-async function subscribeUserToPush() {
-  try {
-    const registration = await navigator.serviceWorker.ready;
-    const existing = await registration.pushManager.getSubscription();
-
-    if (existing) {
-      console.log('✅ Already subscribed to push');
-      return;
-    }
-
-    const subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY)
-    });
-
-    await fetch(`${BASE_URL}/subscribe`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      },
-      body: JSON.stringify(subscription)
-    });
-
-    console.log('📬 Subscribed to push notifications');
-  } catch (err) {
-    console.error('❌ Failed to subscribe to push:', err);
-  }
-}
-
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-  const rawData = atob(base64);
-  return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
-}
-
-// === Notification permission toast logic ===
-window.addEventListener('load', () => {
-  const notifToast = document.getElementById('notifToast');
-  const notifAllowBtn = document.getElementById('notifAllowBtn');
-  const notifToastClose = document.getElementById('notifToastClose');
-
-  const permission = Notification?.permission;
-
-  if ('Notification' in window && permission !== 'granted') {
-    notifToast.style.display = 'flex';
-  }
-
-  notifAllowBtn?.addEventListener('click', async () => {
-    try {
-      const result = await Notification.requestPermission();
-      if (result === 'granted') {
-        localStorage.setItem('notifPermission', 'granted');
-        showToast("Notifications enabled!");
-        await subscribeUserToPush(); // 👈 Crucial part
-        notifToast.style.display = 'none';
-      } else {
-        localStorage.removeItem('notifPermission');
-        showToast("Notifications denied", "red");
-        notifToast.style.display = 'none';
-      }
-    } catch {
-      showToast("Error requesting notification permission", "red");
-      notifToast.style.display = 'none';
-    }
-  });
-
-  notifToastClose?.addEventListener('click', () => {
-    localStorage.removeItem('notifPermission'); // Show toast next time
-    notifToast.style.display = 'none';
-  });
-});
-
