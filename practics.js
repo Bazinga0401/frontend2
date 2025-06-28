@@ -17,103 +17,82 @@ fetch(`${BASE_URL}/api/me`, {
     const adminNames = ['Harsh Ninania', 'Satyam Pr'];
     isAdmin = adminNames.includes(user.name);
     if (isAdmin) {
-      document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
+      document.querySelectorAll('.admin-only').forEach(el => {
+        el.style.display = 'inline-block';
+      });
     }
     fetchTasksFromDB();
   })
-  .catch(() => {
+  .catch(err => {
+    console.error('Error fetching user info:', err);
     localStorage.removeItem('token');
     sessionStorage.removeItem('token');
     window.location.href = "login.html";
   });
 
 // ✅ Logout
-document.getElementById("logoutIconWrapper")?.addEventListener("click", () => {
+document.getElementById("logoutIconWrapper")?.addEventListener("click", function () {
   localStorage.removeItem('token');
   sessionStorage.removeItem('token');
   window.location.href = "login.html";
 });
 
-// === Notification Logic ===
-const PUBLIC_VAPID_KEY = 'BBuTvJaXDDMC4-uqJ2oYMnw2-JAaGwl1FzjwmAKGt_BdBQxmCnrOSVOafgS_vCpCMzYi9ayR3WqPBJNCibx03eg';
+// ✅ Notification Toast Setup
+function showNotifToast() {
+  const toast = document.getElementById("notifToast");
+  if (!toast) return;
+  toast.style.display = "flex";
+  document.getElementById("notifToastClose").onclick = () => toast.style.display = "none";
+  document.getElementById("notifAllowBtn").onclick = () => {
+    toast.style.display = "none";
+    registerForPush();
+  };
+}
 
-async function subscribeUserToPush() {
+async function registerForPush() {
   try {
-    const registration = await navigator.serviceWorker.ready;
-    const existing = await registration.pushManager.getSubscription();
+    const reg = await navigator.serviceWorker.register('/frontend2/sw.js');
+    console.log('[SW] Registered:', reg);
 
-    if (existing) {
-      console.log('✅ Already subscribed to push');
-      return;
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') return alert("Notifications not enabled");
+
+    const existingSub = await reg.pushManager.getSubscription();
+    if (!existingSub) {
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: 'BBuTvJaXDDMC4-uqJ2oYMnw2-JAaGwl1FzjwmAKGt_BdBQxmCnrOSVOafgS_vCpCMzYi9ayR3WqPBJNCibx03eg'
+      });
+
+      await fetch(`${BASE_URL}/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sub)
+      });
+
+      console.log("Push subscribed.");
+    } else {
+      console.log("Already subscribed.");
     }
-
-    const subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY)
-    });
-
-    await fetch(`${BASE_URL}/subscribe`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      },
-      body: JSON.stringify(subscription)
-    });
-
-    console.log('📬 Subscribed to push notifications');
   } catch (err) {
-    console.error('❌ Failed to subscribe to push:', err);
+    console.error("Push setup failed:", err);
   }
 }
 
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-  const rawData = atob(base64);
-  return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
+if ('serviceWorker' in navigator && 'PushManager' in window) {
+  const alreadyAsked = localStorage.getItem("notifAsked");
+  if (!alreadyAsked && Notification.permission === 'default') {
+    setTimeout(() => {
+      showNotifToast();
+      localStorage.setItem("notifAsked", "true");
+    }, 5000);
+  } else if (Notification.permission === 'granted') {
+    registerForPush();
+  }
 }
 
-window.addEventListener('load', () => {
-  const notifToast = document.getElementById('notifToast');
-  const notifAllowBtn = document.getElementById('notifAllowBtn');
-  const notifToastClose = document.getElementById('notifToastClose');
+// ✅ Core Logic Continues
 
-  const permission = Notification?.permission;
-
-  if ('Notification' in window && permission !== 'granted') {
-    notifToast.style.display = 'flex';
-  }
-
-  notifAllowBtn?.addEventListener('click', async () => {
-    try {
-      const result = await Notification.requestPermission();
-      if (result === 'granted') {
-        localStorage.setItem('notifPermission', 'granted');
-        showToast("Notifications enabled!");
-
-        await navigator.serviceWorker.register('/frontend2/sw.js');
-        await subscribeUserToPush();
-
-        notifToast.style.display = 'none';
-      } else {
-        localStorage.removeItem('notifPermission');
-        showToast("Notifications denied", "red");
-        notifToast.style.display = 'none';
-      }
-    } catch {
-      showToast("Error requesting notification permission", "red");
-      notifToast.style.display = 'none';
-    }
-  });
-
-  notifToastClose?.addEventListener('click', () => {
-    localStorage.removeItem('notifPermission');
-    notifToast.style.display = 'none';
-  });
-});
-
-// === Core Task Logic ===
 const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const weekGrid = document.getElementById('weekGrid');
 const addTaskForm = document.getElementById('addTaskForm');
@@ -147,13 +126,13 @@ function renderWeek() {
             ${task.name} | <b>Time:</b> ${task.time}
           </div>
           ${isAdmin ? `
-            <span style="color:#b71c1c;cursor:pointer;font-weight:bold;" title="Delete Task" data-day="${i}" data-idx="${idx}">&times;</span>
+            <span style="color:#b71c1c;cursor:pointer;font-weight:bold;" title="Delete" data-day="${i}" data-idx="${idx}">&times;</span>
             <form class="uploadForm" data-day="${i}" data-idx="${idx}" enctype="multipart/form-data">
               <input type="file" name="file" required>
               <button type="submit">Upload</button>
             </form>
-            ${task.file ? `<button class="deleteFileBtn" data-day="${i}" data-idx="${idx}" data-filename="${task.file}">Delete File</button>` : ''}` : ''}`;
-
+            ${task.file ? `<button class="deleteFileBtn" data-day="${i}" data-idx="${idx}" data-filename="${task.file}">Delete File</button>` : ''}`
+          : ''}`;
         card.appendChild(taskDiv);
       });
     }
@@ -165,23 +144,23 @@ function renderWeek() {
 }
 
 function setupTaskEvents(tasks) {
-  document.querySelectorAll('.task span[title="Delete Task"]').forEach(span => {
+  document.querySelectorAll('.task span[title="Delete"]').forEach(span => {
     span.onclick = async () => {
       const dayIdx = +span.getAttribute('data-day');
       const taskIdx = +span.getAttribute('data-idx');
       const task = tasks[dayIdx][taskIdx];
-      if (!confirm("Are you sure you want to delete this task?")) return;
 
-      try {
-        const res = await fetch(`${BASE_URL}/task/${task._id}`, {
-          method: 'DELETE',
-          headers: { 'Authorization': 'Bearer ' + token }
-        });
-        const data = await res.json();
-        if (data.success) showToast("Task deleted");
-        else showToast("Failed to delete task", "red");
-      } catch {
-        showToast("Server error while deleting task", "red");
+      if (task._id) {
+        try {
+          const res = await fetch(`${BASE_URL}/task/${task._id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          const data = await res.json();
+          if (!data.success) alert('Failed to delete task from DB.');
+        } catch (err) {
+          alert('Server error while deleting task.');
+        }
       }
 
       tasks[dayIdx].splice(taskIdx, 1);
@@ -217,16 +196,15 @@ function setupTaskEvents(tasks) {
           const patchData = await patchRes.json();
           if (patchData.success) {
             tasks[dayIdx][taskIdx].file = uploadData.file.filename;
-            showToast("File uploaded!");
             renderWeek();
           } else {
-            showToast('Failed to link file to task', 'red');
+            alert('Failed to link file to task');
           }
         } else {
-          showToast('Upload failed', 'red');
+          alert('Upload failed');
         }
-      } catch {
-        showToast('Server error while uploading', 'red');
+      } catch (err) {
+        alert('Server error while uploading');
       }
     };
   });
@@ -252,7 +230,7 @@ function setupTaskEvents(tasks) {
         a.click();
         a.remove();
         URL.revokeObjectURL(url);
-      } catch {
+      } catch (err) {
         alert('Error downloading file.');
       }
     };
@@ -275,7 +253,7 @@ function setupTaskEvents(tasks) {
         });
 
         const delData = await delRes.json();
-        if (!delData.success) return showToast('Failed to delete file.', 'red');
+        if (!delData.success) return alert('Failed to delete file.');
 
         const patchRes = await fetch(`${BASE_URL}/task/${taskId}/remove-file`, {
           method: 'PATCH',
@@ -283,13 +261,13 @@ function setupTaskEvents(tasks) {
         });
 
         const patchData = await patchRes.json();
-        if (!patchData.success) return showToast('File deleted but reference remains.', 'red');
+        if (!patchData.success) return alert('File deleted but reference remains.');
 
         tasks[dayIdx][taskIdx].file = '';
-        showToast('File deleted');
+        alert('File deleted');
         renderWeek();
-      } catch {
-        showToast('Server error', 'red');
+      } catch (err) {
+        alert('Server error');
       }
     };
   });
@@ -327,10 +305,10 @@ addTaskForm.onsubmit = async e => {
     });
 
     const data = await res.json();
-    if (!data.success) showToast('Failed to save task in DB.', 'red');
+    if (!data.success) alert('Failed to save task in DB.');
     else fetchTasksFromDB();
-  } catch {
-    showToast('Error connecting to server.', 'red');
+  } catch (err) {
+    alert('Error connecting to server.');
   }
 };
 
@@ -348,10 +326,10 @@ async function fetchTasksFromDB() {
       });
       renderWeek();
     } else {
-      showToast('Failed to load tasks from DB', 'red');
+      alert('Failed to load tasks from DB');
     }
-  } catch {
-    showToast('Server error while loading tasks.', 'red');
+  } catch (err) {
+    alert('Server error while loading tasks.');
   }
 }
 
