@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Weekly Task Planner</title>
+  <link rel="stylesheet" href="practice.css">
+<link rel="manifest" href="/frontend2/manifest.json">
+<meta name="theme-color" content="#2b2b2b">
+<link rel="apple-touch-icon" href="/icons/manifest-icon-192.maskable.png">
+<!-- Firebase App (compat) -->
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+
+<!-- Firebase Messaging (compat) -->
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-messaging-compat.js"></script>
+
+</head>
+<body>
+  <div id="loader">
+  <div class="logo-container">
+    <img src="./icons/manifest-icon-512.maskable.png" alt="Pi - pi ka Hisab Logo" class="logo">
+    <p class="loader-text">Pi-Pi ka Hisab</p>
+  </div>
+</div>
+
+  <header>
+    <div id="logoutIconWrapper" title="Logout">
+     
+  <!-- Paste your SVG code directly here instead of linking to the file -->
+  <!-- Or if you're using it as an <img>: -->
+  <img src="d.svg" alt="Logout" id="logoutIcon" />
+</div>
+    <div id="header">
+      <h1>π - π ka hisab</h1>
+      <p class="tagline">Your week, sorted — with precision.</p>
+    </div>
+    
+
+  </header>
+
+  <div class="tab-buttons">
+    <button id="thisWeekBtn" class="active-tab">This Week</button>
+    <button id="nextWeekBtn">Next Week</button>
+  </div>
+
+  <div class="week-wrapper">
+    <div class="week-grid" id="weekGrid"></div>
+    <div style="height: 60px;"></div> <!-- 👈 This adds blank space -->
+  </div>
+
+  <form class="add-task-form" id="addTaskForm">
+    <h3>Add Task</h3>
+    <label>
+      Day:
+      <select id="taskDay" required>
+        <option value="0">Monday</option>
+        <option value="1">Tuesday</option>
+        <option value="2">Wednesday</option>
+        <option value="3">Thursday</option>
+        <option value="4">Friday</option>
+        <option value="5">Saturday</option>
+        <option value="6">Sunday</option>
+      </select>
+    </label>
+    <label>
+      Task:
+      <input type="text" id="taskName" required placeholder="Enter your task">
+    </label>
+    <label>
+      Time:
+      <input type="time" id="taskTime" required>
+    </label>
+    <div>
+      <button type="submit">Add</button>
+      <button type="button" class="close-form" id="closeFormBtn">Cancel</button>
+    </div>
+  </form>
+
+  <button class="add-btn admin-only" id="showFormBtn">+</button>
+  
+  <script src="practics.js"></script>
+ 
+
+  <footer style="text-align: center; padding: 1rem; font-size: 0.9rem; color: #aaa; background-color: rgb(23, 23, 23);">
+  &copy; 2025 π - π ka Hisab. All rights reserved. <br>
+  Made with ❤️ by Satyam Prasad and Harsh Ninania! <br>
+  #PANNI ON TOP
+</footer>
+  <div id="notifToast" class="toast">
+  🔔 Enable reminders for your tasks!
+  <button id="notifAllowBtn">Allow</button>
+  <span id="notifToastClose">&times;</span>
+</div>
+</body>
+</html>
