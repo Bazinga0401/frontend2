@@ -1,6 +1,6 @@
 {
   "name": "Pi-Pi ka Hisab",
-  "short_name": "Task Logger",
+  "short_name": "Pi-Pi Ka Hisab",
   "start_url": "/frontend2/index.html",
   "scope": "/frontend2/",
   "display": "standalone",
