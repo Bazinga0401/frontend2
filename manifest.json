@@ -1,7 +1,7 @@
 {
   "name": "Pi-Pi ka Hisab",
   "short_name": "task logger",
-  "start_url": "/index.html",
+  "start_url": "/frontend2/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2b2b2b",
