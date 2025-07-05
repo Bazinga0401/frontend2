@@ -71,6 +71,8 @@ body {
 
 /* End of loading animation */
 #header {
+   width: 100vw;
+  max-width: 100%;
        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   position: relative;
   z-index: 1;
@@ -116,14 +118,15 @@ body {
  
    
 .week-grid {
-  display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-
-  /* grid-template-rows: repeat(auto-fit, minmax(150px, 1fr)); */ /* Remove this line */
-  gap: 1rem;
-  padding: 1rem;
-}
-
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  .week-wrapper {
+    width: 95%;
+    margin: 0 auto;
+  }
 
 .day-card {
   background: rgb(82, 82, 82);
@@ -444,3 +447,12 @@ body {
 }
 
 /*admin ui changes*/
+footer {
+text-align: center; 
+   padding: 1rem; 
+   font-size: 0.8rem; 
+   color: #aaa; 
+   background-color: rgb(23, 23, 23);
+  width: 100vw;
+  max-width: 100%;
+}
