@@ -56,8 +56,9 @@ step2Form.addEventListener('submit', async (e) => {
       step2Form.reset();
       messageBox.textContent += ' You can now log in. Redirecting...';
       setTimeout(() => {
-        window.location.href = 'https://bazinga0401.github.io/frontend2'; // 👈 Replace with actual site
-      }, 3000);
+        window.location.href = "/";
+// 👈 Replace with actual site
+      }, 2000);
     }
   } catch (err) {
     console.error('OTP verification error:', err);
