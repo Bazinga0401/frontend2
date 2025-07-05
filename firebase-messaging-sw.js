@@ -20,7 +20,7 @@ messaging.onBackgroundMessage(payload => {
   const options = {
     body,
     icon: '/icons/manifest-icon-192.maskable.png',
-    badge: '/icons/manifest-icon-192.maskable.png',
+    badge: '/icons/apple-icon-180.png',
     data: {
       url: '/index.html'
     }
