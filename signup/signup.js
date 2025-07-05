@@ -95,8 +95,8 @@ document.getElementById("signupForm").onsubmit = async function (e) {
     if (data.success) {
       alert("Account created successfully! Redirecting...");
       setTimeout(() => {
-        window.location.href = "https://Bazinga0401.github.io/frontend2/index.html";
-      }, 3000);
+        window.location.href = "/";
+      }, 2000);
     } else {
       alert(data.message || "Signup failed.");
     }
