@@ -72,7 +72,7 @@ document.getElementById("logoutIconWrapper")?.addEventListener("click", function
 if ('serviceWorker' in navigator && 'PushManager' in window) {
   window.addEventListener('load', async () => {
     try {
-     const reg = await navigator.serviceWorker.register('/frontend2/firebase-messaging-sw.js');
+     const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
 await navigator.serviceWorker.ready; // ✅ wait until it's active
 console.log('✅ Service Worker is ready and controlling this page');
          
