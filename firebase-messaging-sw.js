@@ -19,10 +19,10 @@ messaging.onBackgroundMessage(payload => {
   const { title, body } = payload.notification || {};
   const options = {
     body,
-    icon: '/frontend2/icons/manifest-icon-192.maskable.png',
-    badge: '/frontend2/icons/manifest-icon-192.maskable.png',
+    icon: '/icons/manifest-icon-192.maskable.png',
+    badge: '/icons/manifest-icon-192.maskable.png',
     data: {
-      url: '/frontend2/index.html'
+      url: '/index.html'
     }
   };
 
@@ -32,7 +32,7 @@ messaging.onBackgroundMessage(payload => {
 // ✅ Notification Click Handler
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  const url = event.notification.data?.url || '/frontend2/index.html';
+  const url = event.notification.data?.url || '/index.html';
   event.waitUntil(clients.openWindow(url));
 });
 
@@ -41,12 +41,12 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open('pi-hisab-static-v1').then(cache =>
       cache.addAll([
-        '/frontend2/',
-        '/frontend2/index.html',
-        '/frontend2/practice.css',
-        '/frontend2/practics.js',
-        '/frontend2/icons/manifest-icon-192.maskable.png',
-        '/frontend2/icons/manifest-icon-512.maskable.png'
+        '/',
+        '/index.html',
+        '/practice.css',
+        '/practics.js',
+        '/icons/manifest-icon-192.maskable.png',
+        '/icons/manifest-icon-512.maskable.png'
       ])
     )
   );
