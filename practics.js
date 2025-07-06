@@ -161,18 +161,21 @@ function renderWeek() {
         const taskDiv = document.createElement('div');
         taskDiv.className = 'task';
         taskDiv.innerHTML = `
-          <div class="taskClickable" data-filename="${task.file || ''}" style="flex:1;">
-            ${task.name} | <b>Time:</b> ${task.time}
-          </div>
-          ${isAdmin ? `
-            <span style="color:#b71c1c;cursor:pointer;font-weight:bold;" title="Delete" data-day="${i}" data-idx="${idx}">&times;</span>
-            <form class="uploadForm" data-day="${i}" data-idx="${idx}" enctype="multipart/form-data">
-              <input type="file" name="file" required>
-              <button type="submit">Upload</button>
-            </form>
-            ${task.file ? `<button class="deleteFileBtn" data-day="${i}" data-idx="${idx}" data-filename="${task.file}">Delete File</button>` : ''}
-          ` : ''}
-        `;
+  <div class="taskClickable" data-filename="${task.file || ''}" style="flex:1;">
+    ${task.name} | <b>Time:</b> ${task.time}
+  </div>
+  ${isAdmin ? `
+    <form class="uploadForm" data-day="${i}" data-idx="${idx}" enctype="multipart/form-data">
+      <input type="file" name="file" required>
+      <button type="submit">Upload</button>
+    </form>
+    ${task.file ? `
+      <button class="previewFileBtn" data-filename="${task.file}">Preview</button>
+      <button class="deleteFileBtn" data-day="${i}" data-idx="${idx}" data-filename="${task.file}">Delete File</button>
+    ` : ''}
+    <span style="color:#b71c1c;cursor:pointer;font-weight:bold;" title="Delete" data-day="${i}" data-idx="${idx}">&times;</span>
+  ` : ''}
+`;
         card.appendChild(taskDiv);
       });
     }
@@ -319,6 +322,23 @@ function setupTaskEvents(tasks) {
   });
 }
 
+
+//preview button 
+
+document.querySelectorAll('.previewFileBtn').forEach(button => {
+  button.onclick = async () => {
+    const filename = button.getAttribute('data-filename');
+    if (!filename) return alert('No file to preview');
+
+    try {
+      const previewUrl = `${BASE_URL}/preview/${filename}`;
+      window.open(previewUrl, '_blank');
+    } catch (err) {
+      console.error('Preview error:', err);
+      alert('Error previewing file.');
+    }
+  };
+});
 // Form toggle
 showFormBtn.onclick = () => addTaskForm.style.display = 'flex';
 closeFormBtn.onclick = () => {
