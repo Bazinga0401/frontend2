@@ -456,3 +456,129 @@ text-align: center;
   width: 100vw;
   max-width: 100%;
 }
+
+
+
+/* ========================= */
+/* 💼 ADMIN UI ENHANCEMENTS */
+/* ========================= */
+
+.admin-only.visible {
+  display: inline-block !important;
+}
+
+/* Upload & Preview Buttons */
+.uploadForm {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.uploadForm input[type="file"] {
+  flex: 1 1 auto;
+  min-width: 120px;
+  color: #ddd;
+}
+
+.uploadForm button {
+  padding: 4px 10px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
+}
+
+.uploadForm button:hover {
+  background-color: #145a9e;
+}
+
+/* Preview & Delete File Buttons */
+.previewFileBtn,
+.deleteFileBtn {
+  padding: 4px 8px;
+  margin-top: 0.4rem;
+  margin-right: 0.4rem;
+  background-color: #444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.previewFileBtn:hover {
+  background-color: #5c6bc0;
+}
+
+.deleteFileBtn:hover {
+  background-color: #d32f2f;
+}
+
+/* Delete Icon (×) */
+.delete-icon {
+  color: #b71c1c;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+}
+
+.delete-icon:hover {
+  transform: scale(1.2);
+}
+
+/* Notification badge (🔴 red dot) */
+#notif-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
+  display: none;
+  z-index: 10;
+}
+
+#notif-badge.show {
+  display: block !important;
+}
+
+/* Upload + Preview Container (in task) */
+.task .admin-only {
+  margin-top: 0.4rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  align-items: center;
+}
+
+/* Responsive Admin UI */
+@media (max-width: 768px) {
+  .uploadForm {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .uploadForm input[type="file"] {
+    width: 100%;
+  }
+
+  .uploadForm button,
+  .previewFileBtn,
+  .deleteFileBtn {
+    width: 100%;
+    margin: 2px 0;
+  }
+
+  .delete-icon {
+    font-size: 1.3rem;
+  }
+}
