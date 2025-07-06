@@ -163,15 +163,19 @@ function renderWeek() {
           <div class="taskClickable" data-filename="${task.file || ''}" style="flex:1;">
             ${task.name} | <b>Time:</b> ${task.time}
           </div>
-          ${isAdmin ? `
-            <span class="delete-icon" title="Delete" data-day="${i}" data-idx="${idx}">&times;</span>
+         ${isAdmin ? `
+  <div class="admin-only">
+    <span class="delete-icon" title="Delete" data-day="${i}" data-idx="${idx}">&times;</span>
 
-            <form class="uploadForm" data-day="${i}" data-idx="${idx}" enctype="multipart/form-data">
-              <input type="file" name="file" required>
-              <button type="submit">Upload</button>
-            </form>
-            ${task.file ? `<button class="deleteFileBtn" data-day="${i}" data-idx="${idx}" data-filename="${task.file}">Delete File</button>` : ''}
-          ` : ''}
+    <form class="uploadForm" data-day="${i}" data-idx="${idx}" enctype="multipart/form-data">
+      <input type="file" name="file" required>
+      <button type="submit">Upload</button>
+    </form>
+
+    ${task.file ? `<button class="deleteFileBtn" data-day="${i}" data-idx="${idx}" data-filename="${task.file}">Delete File</button>` : ''}
+  </div>
+` : ''}
+
         `;
         card.appendChild(taskDiv);
       });
