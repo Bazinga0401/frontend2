@@ -164,7 +164,8 @@ function renderWeek() {
             ${task.name} | <b>Time:</b> ${task.time}
           </div>
           ${isAdmin ? `
-            <span style="color:#b71c1c;cursor:pointer;font-weight:bold;" title="Delete" data-day="${i}" data-idx="${idx}">&times;</span>
+            <span class="delete-icon" title="Delete" data-day="${i}" data-idx="${idx}">&times;</span>
+
             <form class="uploadForm" data-day="${i}" data-idx="${idx}" enctype="multipart/form-data">
               <input type="file" name="file" required>
               <button type="submit">Upload</button>
@@ -185,6 +186,9 @@ function renderWeek() {
 function setupTaskEvents(tasks) {
   document.querySelectorAll('.task span[title="Delete"]').forEach(span => {
     span.onclick = async () => {
+  const confirmDelete = confirm('Are you sure you want to delete this task?');
+  if (!confirmDelete) return; 
+      
       const dayIdx = +span.getAttribute('data-day');
       const taskIdx = +span.getAttribute('data-idx');
       const task = tasks[dayIdx][taskIdx];
