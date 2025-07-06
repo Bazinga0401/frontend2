@@ -17,7 +17,6 @@ if (!token) {
 
 // ✅ Admin UI Setup
 let isAdmin = false;
-document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
 fetch(`${BASE_URL}/api/me`, {
   headers: { Authorization: `Bearer ${token}` }
 })
@@ -30,7 +29,7 @@ fetch(`${BASE_URL}/api/me`, {
   isAdmin = adminNames.includes(user.name);
   if (isAdmin) {
     document.querySelectorAll('.admin-only').forEach(el => {
-      el.style.display = 'inline-block';
+      el.classList.add('visible');
     });
   }
   fetchTasksFromDB();
@@ -225,7 +224,7 @@ function setupTaskEvents(tasks) {
 
         const uploadData = await uploadRes.json();
         if (uploadData.success) {
-          alert('File uploaded successfully ✅');
+          showToast('File uploaded successfully ✅');
 
           const patchRes = await fetch(`${BASE_URL}/task/${tasks[dayIdx][taskIdx].id}/add-file`, {
             method: 'PATCH',
@@ -256,14 +255,14 @@ function setupTaskEvents(tasks) {
   document.querySelectorAll('.taskClickable').forEach(div => {
     div.onclick = async () => {
       const filename = div.getAttribute('data-filename');
-      if (!filename) return alert('Solution not uploaded yet.');
+      if (!filename) return showToast('Solution not uploaded yet.');
 
       try {
         const res = await fetch(`${BASE_URL}/download/${filename}`, {
           headers: { Authorization: 'Bearer ' + token }
         });
 
-        if (!res.ok) return alert('Download failed');
+        if (!res.ok) return showToast('Download failed');
 
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
@@ -309,7 +308,7 @@ function setupTaskEvents(tasks) {
         if (!patchData.success) return alert('File deleted but reference remains.');
 
         tasks[dayIdx][taskIdx].file = '';
-        alert('File deleted');
+        showToast('File deleted');
         renderWeek();
       } catch (err) {
         console.error('Error deleting file:', err);
@@ -394,6 +393,19 @@ async function fetchTasksFromDB() {
     alert('Server error while loading tasks.');
   }
 }
+//Toast Setup
+function showToast(message) {
+  const toast = document.querySelector('.toast');
+  if (!toast) return;
+
+  toast.innerHTML = `${message} <span onclick="this.parentElement.style.display='none'">&times;</span>`;
+  toast.style.display = 'block';
+
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 2000);
+}
+
 
 // Tab switching
 document.getElementById('thisWeekBtn').onclick = () => {
