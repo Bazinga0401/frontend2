@@ -525,14 +525,14 @@ text-align: center;
   color: #b71c1c;
   font-weight: bold;
   cursor: pointer;
-  margin-left: 0.5rem;
   font-size: 1.1rem;
   transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
-  padding: 2px 6px;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
   border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
 }
 
 .delete-icon:hover {
