@@ -159,24 +159,27 @@ function renderWeek() {
       tasks[i].forEach((task, idx) => {
         const taskDiv = document.createElement('div');
         taskDiv.className = 'task';
-        taskDiv.innerHTML = `
-          <div class="taskClickable" data-filename="${task.file || ''}" style="flex:1;">
-            ${task.name} | <b>Time:</b> ${task.time}
-          </div>
-         ${isAdmin ? `
-  <div class="admin-only">
+       taskDiv.innerHTML = `
+  ${isAdmin ? `
     <span class="delete-icon" title="Delete" data-day="${i}" data-idx="${idx}">&times;</span>
+  ` : ''}
 
-    <form class="uploadForm" data-day="${i}" data-idx="${idx}" enctype="multipart/form-data">
-      <input type="file" name="file" required>
-      <button type="submit">Upload</button>
-    </form>
-
-    ${task.file ? `<button class="deleteFileBtn" data-day="${i}" data-idx="${idx}" data-filename="${task.file}">Delete File</button>` : ''}
+  <div class="taskClickable" data-filename="${task.file || ''}" style="flex:1; margin-left: 0.5rem;">
+    ${task.name} | <b>Time:</b> ${task.time}
   </div>
-` : ''}
 
-        `;
+  ${isAdmin ? `
+    <div class="admin-only">
+      <form class="uploadForm" data-day="${i}" data-idx="${idx}" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit">Upload</button>
+      </form>
+
+      ${task.file ? `<button class="deleteFileBtn" data-day="${i}" data-idx="${idx}" data-filename="${task.file}">Delete File</button>` : ''}
+    </div>
+  ` : ''}
+`;
+
         card.appendChild(taskDiv);
       });
     }
