@@ -527,16 +527,20 @@ text-align: center;
   cursor: pointer;
   margin-left: 0.5rem;
   font-size: 1.1rem;
-  transition: transform 0.2s ease;
+  transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+  padding: 2px 6px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .delete-icon:hover {
-  transform: scale(1.2);
-  background-color: #d32f2f;
+  background-color: #b71c1c;
   color: white;
-  border-radius: 50%;
-  padding: 0.2rem 0.5rem;
+  transform: scale(1.05);
 }
+
 
 /* Notification badge (🔴 red dot) */
 #notif-badge {
