@@ -465,6 +465,36 @@ text-align: center;
   display: inline-block;
 }
 
+
+#showFormBtn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: #00bcd4;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 2rem;
+  font-weight: bold;
+  display: none; /* Hidden by default */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 999;
+}
+
+#showFormBtn:hover {
+  background-color: #008c9e;
+}
+
+/* Show only if admin */
+#showFormBtn.admin-only.visible {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Upload & Preview Buttons */
 .uploadForm {
   display: flex;
