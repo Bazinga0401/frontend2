@@ -32,7 +32,7 @@ fetch(`${BASE_URL}/api/me`, {
       el.classList.add('visible');
     });
      const showFormBtn = document.getElementById('showFormBtn');
-  if (showFormBtn) showFormBtn.style.display = 'inline-block';
+if (showFormBtn) showFormBtn.classList.add('visible');
 }
   
   fetchTasksFromDB();
