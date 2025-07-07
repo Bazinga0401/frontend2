@@ -2,6 +2,10 @@
   box-sizing: border-box;
   font-family: 'Segoe UI', sans-serif;
 }
+  .admin-only {
+    display: none;
+  }
+
 
 body {
   margin: 0;
@@ -106,10 +110,6 @@ body {
   font-style: italic;
   color: #dddddd;
 }
-
-  .admin-only {
-    display: none;
-  }
 
 
 
