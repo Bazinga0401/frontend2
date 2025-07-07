@@ -470,7 +470,7 @@ text-align: center;
   position: fixed;
   bottom: 24px;
   right: 24px;
-  background-color: #00bcd4;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 50%;
@@ -485,7 +485,7 @@ text-align: center;
 }
 
 #showFormBtn:hover {
-  background-color: #008c9e;
+  background-color: #044890;
 }
 
 /* Show only if admin */
