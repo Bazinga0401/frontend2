@@ -31,7 +31,10 @@ fetch(`${BASE_URL}/api/me`, {
     document.querySelectorAll('.admin-only').forEach(el => {
       el.classList.add('visible');
     });
-  }
+     const showFormBtn = document.getElementById('showFormBtn');
+  if (showFormBtn) showFormBtn.style.display = 'inline-block';
+}
+  
   fetchTasksFromDB();
 })
 .catch(err => {
