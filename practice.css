@@ -226,10 +226,6 @@ body {
   
 }
 
-#showFormBtn {
-  display: none; /* hidden by default */
-}
-
 }
 
 
@@ -466,7 +462,7 @@ text-align: center;
 /* ========================= */
 
 .admin-only.visible {
-  display: inline-block !important;
+  display: inline-block;
 }
 
 /* Upload & Preview Buttons */
