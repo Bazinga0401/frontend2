@@ -10,7 +10,7 @@ let otpVerified = false;
 function isIITREmail(email) {
   return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.iitr\.ac\.in$/.test(email);
 }
-const testMode = true; 
+const testMode = false; 
 // Send OTP
 sendOtpBtn.onclick = async () => {
   const email = emailInput.value.trim();
