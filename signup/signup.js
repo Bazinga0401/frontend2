@@ -15,10 +15,10 @@ const testMode = true;
 sendOtpBtn.onclick = async () => {
   const email = emailInput.value.trim();
 
-// if (!testMode && !isIITREmail(email)) {
-//   alert("Only IITR emails are allowed.");
-//   return;
-// }
+if (!testMode && !isIITREmail(email)) {
+  alert("Only IITR emails are allowed.");
+  return;
+}
   try {
     const res = await fetch(`${BASE_URL}/api/send-otp`, {
       method: "POST",
