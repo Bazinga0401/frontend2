@@ -151,6 +151,9 @@ function renderWeek() {
   const tasks = currentTab === 'this' ? tasksThisWeek : tasksNextWeek;
   weekGrid.innerHTML = '';
 
+  const today = new Date();
+  const jsTodayIndex = (today.getDay() + 6) % 7; // Convert Sunday=0 → Monday=0
+
   weekDays.forEach((day, i) => {
     const card = document.createElement('div');
     card.className = 'day-card';
