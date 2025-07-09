@@ -4,21 +4,31 @@ const sendOtpBtn = document.getElementById('sendOtpBtn');
 const verifyOtpBtn = document.getElementById('verifyOtpBtn');
 const otpInput = document.getElementById('otpInput');
 const registerBtn = document.getElementById('registerBtn');
+ const name = document.getElementById('enrollment').value.trim();
 let otpVerified = false;
 
 // Helper: check for IITR email
 function isIITREmail(email) {
   return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.iitr\.ac\.in$/.test(email);
 }
-const testMode = true; 
+function isValidEnrollmentNumber(name) {
+  return /^241190\d{2}$/.test(name);
+}
+
+
+const testMode = false; 
 // Send OTP
 sendOtpBtn.onclick = async () => {
   const email = emailInput.value.trim();
-
+if (!isValidEnrollmentNumber(name)) {
+  alert("InValid Enrollment Numeber");
+  return;
+}
 if (!testMode && !isIITREmail(email)) {
   alert("Only IITR emails are allowed.");
   return;
 }
+  
   try {
     const res = await fetch(`${BASE_URL}/api/send-otp`, {
       method: "POST",
