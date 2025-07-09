@@ -638,3 +638,11 @@ text-align: center;
 
 }
 
+
+.current-day {
+  border: 2px solid #ffcc00;
+  box-shadow: 0 0 12px 4px #ffcc00;
+  border-radius: 10px;
+}
+
+
