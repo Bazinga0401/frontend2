@@ -154,7 +154,15 @@ function renderWeek() {
   weekDays.forEach((day, i) => {
     const card = document.createElement('div');
     card.className = 'day-card';
+
+    // ✅ Add glowing highlight if current day & current tab is "this"
+    if (i === jsTodayIndex && currentTab === 'this') {
+      card.classList.add('current-day');
+    }
+
     card.innerHTML = `<div class="day-title">${day}</div>`;
+
+
 
     if (tasks[i].length === 0) {
       card.innerHTML += `<div class="empty-msg">No tasks yet 🙃</div>`;
