@@ -4,7 +4,7 @@ const sendOtpBtn = document.getElementById('sendOtpBtn');
 const verifyOtpBtn = document.getElementById('verifyOtpBtn');
 const otpInput = document.getElementById('otpInput');
 const registerBtn = document.getElementById('registerBtn');
- const name = document.getElementById('enrollment').value.trim();
+ const name = document.getElementById('enrollment');
 let otpVerified = false;
 
 // Helper: check for IITR email
