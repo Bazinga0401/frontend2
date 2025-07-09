@@ -4,13 +4,14 @@ const sendOtpBtn = document.getElementById('sendOtpBtn');
 const verifyOtpBtn = document.getElementById('verifyOtpBtn');
 const otpInput = document.getElementById('otpInput');
 const registerBtn = document.getElementById('registerBtn');
- const name = document.getElementById('enrollment');
+ 
 let otpVerified = false;
 
 // Helper: check for IITR email
 function isIITREmail(email) {
   return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.iitr\.ac\.in$/.test(email);
 }
+
 function isValidEnrollmentNumber(name) {
   return /^241190\d{2}$/.test(name);
 }
@@ -20,10 +21,7 @@ const testMode = false;
 // Send OTP
 sendOtpBtn.onclick = async () => {
   const email = emailInput.value.trim();
-if (!isValidEnrollmentNumber(name)) {
-  alert("InValid Enrollment Numeber");
-  return;
-}
+
 if (!testMode && !isIITREmail(email)) {
   alert("Only IITR emails are allowed.");
   return;
@@ -84,6 +82,10 @@ document.getElementById("signupForm").onsubmit = async function (e) {
   const password = document.getElementById('password').value.trim();
   const confirmPassword = document.getElementById('confirmPassword').value.trim();
 
+ if (!isValidEnrollmentNumber(name)) {
+  alert("InValid Enrollment Numeber");
+  return;
+}
   if (!otpVerified) {
     alert("Please verify your OTP first.");
     return;
