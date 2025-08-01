@@ -1,7 +1,7 @@
 importScripts("https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/9.17.1/firebase-messaging-compat.js");
 
-// ✅ Firebase Initialization
+// ✅ Firebase Init
 firebase.initializeApp({
   apiKey: "AIzaSyDZujeILCWJZbxp8sxn9LmbVyu-z5nn060",
   authDomain: "task-manager-185dc.firebaseapp.com",
@@ -12,31 +12,29 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// ✅ Push: Background Notifications
+// ✅ Handle FCM push in background
 messaging.onBackgroundMessage(payload => {
-  console.log('[SW] Background push received:', payload);
+  console.log('[SW] Background push:', payload);
+  const { title, body, url } = payload.data || {};
 
-   const { title, body, url } = payload.data || {};
-  const options = {
+  self.registration.showNotification(title || '🔔 New Alert', {
     body,
     icon: '/icons/manifest-icon-192.maskable.png',
     badge: '/icons/apple-icon-180.png',
     data: {
-    url: url || '/index.html'
+      url: url || '/'
     }
-  };
-
-  self.registration.showNotification(title || '🔔 New Alert', options);
+  });
 });
 
-// ✅ Notification Click Handler
+// ✅ Notification click → redirect
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-const url = event.notification.data?.url || '/index.html';
+  const url = event.notification.data?.url || '/';
   event.waitUntil(clients.openWindow(url));
 });
 
-// ✅ PWA Install & Static Cache
+// ✅ Cache App Shell
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open('pi-hisab-static-v1').then(cache =>
@@ -50,18 +48,18 @@ self.addEventListener('install', event => {
       ])
     )
   );
-  self.skipWaiting();
+  // 🧠 skipWaiting removed to stop Chrome auto-update message
 });
 
+// ✅ Take control on activation
 self.addEventListener('activate', event => {
   event.waitUntil(clients.claim());
 });
 
-// ✅ Fetch Caching: Network First (GET-only, skip PDFs)
+// ✅ Network First (skip PDFs)
 self.addEventListener('fetch', event => {
   const req = event.request;
 
-  // Only cache GET requests, and skip .pdf files
   if (req.method !== 'GET' || req.url.endsWith('.pdf')) return;
 
   event.respondWith(
@@ -78,4 +76,3 @@ self.addEventListener('fetch', event => {
       .catch(() => caches.match(req))
   );
 });
-
