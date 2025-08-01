@@ -16,13 +16,13 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage(payload => {
   console.log('[SW] Background push received:', payload);
 
-  const { title, body } = payload.notification || {};
+   const { title, body, url } = payload.data || {};
   const options = {
     body,
     icon: '/icons/manifest-icon-192.maskable.png',
     badge: '/icons/apple-icon-180.png',
     data: {
-      url: '/index.html'
+    url: url || '/index.html'
     }
   };
 
@@ -32,7 +32,7 @@ messaging.onBackgroundMessage(payload => {
 // ✅ Notification Click Handler
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  const url = event.notification.data?.url || '/index.html';
+const url = event.notification.data?.url || '/index.html';
   event.waitUntil(clients.openWindow(url));
 });
 
@@ -78,3 +78,4 @@ self.addEventListener('fetch', event => {
       .catch(() => caches.match(req))
   );
 });
+
