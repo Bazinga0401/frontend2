@@ -148,12 +148,11 @@ console.log('[🪪 Auth token]', token);
       }
 
       messaging.onMessage(payload => {
-        console.log('[📬 Foreground Push]', payload);
-        const { title, body } = payload.notification || {};
-        new Notification(title || 'New Task 📝', { body });
-        localStorage.setItem('unreadNotif', 'true');
-        document.getElementById('notif-badge')?.style?.setProperty('display', 'block');
-      });
+  console.log('[📬 Foreground Push]', payload);
+  localStorage.setItem('unreadNotif', 'true');
+  document.getElementById('notif-badge')?.style?.setProperty('display', 'block');
+});
+
     } catch (err) {
       console.error('🔥 Error during FCM setup:', err);
     }
@@ -473,6 +472,7 @@ document.getElementById('nextWeekBtn').onclick = () => {
   document.getElementById('thisWeekBtn').classList.remove('active-tab');
   renderWeek();
 };
+
 
 
 
