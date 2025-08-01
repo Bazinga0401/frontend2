@@ -131,10 +131,14 @@ if (permission !== 'granted') {
 
       if (fcmToken) {
         await fetch(`${BASE_URL}/fcm-subscribe`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: fcmToken })
-        });
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + token  // ✅ ADD THIS
+  },
+  body: JSON.stringify({ token: fcmToken })
+});
+
         console.log('🔑 Token registered with backend');
       } else {
         console.warn('⚠️ Failed to get FCM token');
@@ -466,4 +470,5 @@ document.getElementById('nextWeekBtn').onclick = () => {
   document.getElementById('thisWeekBtn').classList.remove('active-tab');
   renderWeek();
 };
+
 
