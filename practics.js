@@ -130,6 +130,9 @@ if (permission !== 'granted') {
       });
 
       if (fcmToken) {
+        console.log('[🔒 Sending FCM token]', fcmToken);
+console.log('[🪪 Auth token]', token);
+
         await fetch(`${BASE_URL}/fcm-subscribe`, {
   method: 'POST',
   headers: {
@@ -470,5 +473,6 @@ document.getElementById('nextWeekBtn').onclick = () => {
   document.getElementById('thisWeekBtn').classList.remove('active-tab');
   renderWeek();
 };
+
 
 
