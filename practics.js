@@ -31,7 +31,7 @@ fetch(`${BASE_URL}/api/me`, {
 
 .then(user => {
 
-  const adminNames = ['Harsh Ninania', 'Bazinga!', '24119080','24119081'];
+  const adminNames = ['Harsh Ninania', 'Bazinga!'];
   isAdmin = adminNames.includes(user.name);
   userSubbatch = user.subbatch;
   if (isAdmin) {
@@ -472,6 +472,7 @@ document.getElementById('nextWeekBtn').onclick = () => {
   document.getElementById('thisWeekBtn').classList.remove('active-tab');
   renderWeek();
 };
+
 
 
 
