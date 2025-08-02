@@ -14,6 +14,7 @@ const messaging = firebase.messaging();
 
 // ✅ Handle FCM push in background
 messaging.onBackgroundMessage(payload => {
+  if (!payload.notification) {
   console.log('[SW] Background push:', payload);
   const title = payload.notification?.title || 'Breaking News: You Have a Task 📰';
   const body = payload.notification?.body || '';
@@ -22,10 +23,9 @@ messaging.onBackgroundMessage(payload => {
     body,
     icon: '/icons/manifest-icon-192.maskable.png',
     badge: '/icons/apple-icon-180.png',
-    data: {
-      url: url || '/'
-    }
+    data: {  url: url || '/' }
   });
+  }
 });
 
 
@@ -79,4 +79,5 @@ self.addEventListener('fetch', event => {
       .catch(() => caches.match(req))
   );
 });
+
 
