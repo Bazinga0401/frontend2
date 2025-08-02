@@ -15,9 +15,10 @@ const messaging = firebase.messaging();
 // ✅ Handle FCM push in background
 messaging.onBackgroundMessage(payload => {
   console.log('[SW] Background push:', payload);
-  const { title, body, url } = payload.data || {};
-
-  self.registration.showNotification(title || '🔔 New Alert', {
+  const title = payload.notification?.title || 'Breaking News: You Have a Task 📰';
+  const body = payload.notification?.body || '';
+  const url = payload.data?.url || '/';
+  self.registration.showNotification(title || 'Breaking News: You Have a Task 📰', {
     body,
     icon: '/icons/manifest-icon-192.maskable.png',
     badge: '/icons/apple-icon-180.png',
@@ -26,6 +27,8 @@ messaging.onBackgroundMessage(payload => {
     }
   });
 });
+
+
 
 // ✅ Notification click → redirect
 self.addEventListener('notificationclick', event => {
@@ -76,3 +79,4 @@ self.addEventListener('fetch', event => {
       .catch(() => caches.match(req))
   );
 });
+
